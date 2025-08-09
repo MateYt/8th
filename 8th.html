@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>8th Monthsa </title>
+<style>
+  body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    background: #fffbe6;
+    font-family: Arial, sans-serif;
+    text-align: center;
+    margin: 0;
+    padding: 20px;
+    overflow-x: hidden;
+  }
+  #emojiContainer {
+    display: grid;
+    gap: 1.5px;
+    margin-bottom: 20px;
+    width: max-content;
+  }
+  .cell {
+    width: 16px;
+    height: 16px;
+    line-height: 16px;
+    font-size: 14px;
+    text-align: center;
+    user-select: none;
+    transition: transform 1s ease, opacity 1s ease;
+    position: relative;
+  }
+  button {
+    padding: 8px 20px;
+    font-size: 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    border: none;
+    background-color: #ff9ecd;
+    color: white;
+    transition: opacity 0.8s ease, transform 0.3s ease;
+  }
+  button.boom {
+    font-weight: bold;
+    font-size: 24px;
+    transform: scale(1.2);
+  }
+  button.fade-out {
+    opacity: 0;
+  }
+  #message {
+    margin-top: 24px;
+    font-size: 18px;
+    color: #333;
+    max-width: 90vw;
+    text-align: center;
+  }
+</style>
+</head>
+<body>
+
+<div id="emojiContainer"></div>
+<button id="addEmoji">"Do You Even Love Me??"</button>
+<div id="message"></div>
+
+<script>
+  const emojis = ["♥️", "🧸", "⭐", "🌟", "☁️", "🕸️", "🕷️"];
+
+  const letters = {
+    "I": [
+      "111",
+      "010",
+      "010",
+      "010",
+      "010",
+      "111"
+    ],
+    "L": [
+      "100",
+      "100",
+      "100",
+      "100",
+      "100",
+      "111"
+    ],
+    "O": [
+      "01110",
+      "10001",
+      "10001",
+      "10001",
+      "10001",
+      "01110"
+    ],
+    "V": [
+      "10001",
+      "10001",
+      "10001",
+      "10001",
+      "01010",
+      "00100"
+    ],
+    "E": [
+      "11111",
+      "10000",
+      "11110",
+      "10000",
+      "10000",
+      "11111"
+    ],
+    "Y": [
+      "10001",
+      "01010",
+      "00100",
+      "00100",
+      "00100",
+      "00100"
+    ],
+    "U": [
+      "10001",
+      "10001",
+      "10001",
+      "10001",
+      "10001",
+      "01110"
+    ]
+  };
+
+  const phrase = ["I","L","O","V","E","Y","O","U"];
+  const letterSpacing = 2; // columns between letters
+  const letterHeight = 6;
+
+  let revealedPixels = 0;
+  let pixelsToReveal = 1;
+  const pixelOrder = [];
+
+  let colOffset = 0;
+  phrase.forEach(letter => {
+    const pattern = letters[letter];
+    const letterWidth = pattern[0].length;
+    for (let row = 0; row < letterHeight; row++) {
+      for (let col = 0; col < letterWidth; col++) {
+        if (pattern[row][col] === "1") {
+          pixelOrder.push({row, col: col + colOffset});
+        }
+      }
+    }
+    colOffset += letterWidth + letterSpacing;
+  });
+
+  const totalCols = colOffset - letterSpacing;
+  const totalRows = letterHeight;
+
+  const container = document.getElementById("emojiContainer");
+  container.style.gridTemplateColumns = `repeat(${totalCols}, 16px)`;
+  container.style.gridTemplateRows = `repeat(${totalRows}, 16px)`;
+
+  for(let r = 0; r < totalRows; r++) {
+    for(let c = 0; c < totalCols; c++) {
+      const cell = document.createElement("div");
+      cell.className = "cell";
+      cell.dataset.row = r;
+      cell.dataset.col = c;
+      container.appendChild(cell);
+    }
+  }
+
+  const button = document.getElementById("addEmoji");
+  const message = document.getElementById("message");
+
+  function render() {
+    document.querySelectorAll(".cell").forEach(cell => cell.textContent = "");
+    for(let i = 0; i < revealedPixels; i++) {
+      const p = pixelOrder[i];
+      const emoji = emojis[i % emojis.length];
+      const cell = document.querySelector(`.cell[data-row='${p.row}'][data-col='${p.col}']`);
+      if(cell) cell.textContent = emoji;
+    }
+  }
+
+  function explodeEmojis() {
+    const cells = document.querySelectorAll(".cell");
+    cells.forEach(cell => {
+      const angle = Math.random() * 2 * Math.PI;
+      const distance = 90 + Math.random() * 120;
+      const x = Math.cos(angle) * distance;
+      const y = Math.sin(angle) * distance;
+      cell.style.transition = "transform 1s ease, opacity 1s ease";
+      cell.style.transform = `translate(${x}px, ${y}px) rotate(${Math.random() * 720 - 360}deg)`;
+      cell.style.opacity = "0";
+    });
+  }
+
+  function explodeButton() {
+    button.textContent = "❤️";
+    button.classList.add("boom");
+
+    setTimeout(() => {
+      button.classList.add("fade-out");
+    }, 700);
+
+    button.addEventListener("transitionend", () => {
+      button.style.display = "none";
+      message.textContent = "💖Love exploded! It Was too much I'm afraid :(. Happy Monthsary Baby!! Time flies, we're closer to anniversaries than our first monthsary. I'm grateful to you for causing me much growth and we're going to develop more. All these past months with you has been fun and has been the best months of my life regardless of the problems and arguments. I hope you can continue loving me and stay true to me, and I promise my full loyalty and love. You're my favorite girl, the only one I want to celebrate monthsaries and anniversaries with. I hope you look at yourself a bit better baby, like how I see you, It's not s competition baby, keep at your own pace and I'm with you the whole time and always will be. again baby Iloveyousomuch. To more monthsaries and future anniversaries. My love, My dearest baby Nathalie.💖";
+    }, { once: true });
+
+    button.disabled = true;
+  }
+
+  button.addEventListener("click", () => {
+    if(button.classList.contains("boom"))  {
+      explodeEmojis();
+      explodeButton();
+      return;
+    }
+
+    revealedPixels = Math.min(revealedPixels + pixelsToReveal, pixelOrder.length);
+    pixelsToReveal++;
+    render();
+
+    if(revealedPixels >= pixelOrder.length) {
+      button.textContent = "BOOM";
+      button.classList.add("boom");
+    }
+  });
+
+  render();
+</script>
+
+</body>
+</html>
